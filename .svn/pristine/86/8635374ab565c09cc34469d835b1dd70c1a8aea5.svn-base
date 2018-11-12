@@ -1,0 +1,143 @@
+package com.jihee.kr.service;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jihee.kr.vo.JSdatanodeVO;
+
+@Service("CallrestapiService")
+public class CallrestapiServiceImp implements CallrestapiService {
+	private static final Logger logger = LoggerFactory.getLogger(CallrestapiService.class);
+	final int search = 0;
+	final int start = 1;
+	final int next = 2;
+	//final int back = 3;
+
+	@Override
+	public String callapi(String jsdata, int type) throws IOException {
+		// TODO Auto-generated method stub
+		//hearder setting
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", "application/json;charset=UTF-8;version=1.0");
+		headers.set("Content-Type", "application/json;charset=UTF-8;version=1.0");
+		
+		//set JS
+		JSdatanodeVO jsdatanodevo = new JSdatanodeVO();
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode datanode = mapper.readTree(jsdata);
+		switch (type) {
+			case search:
+				jsdatanodevo.setKeyword(datanode.path("keywords").textValue());
+				break;
+			case start:
+				jsdatanodevo.setDialog_id(datanode.path("dialog_id").intValue());
+				break;
+			case next:
+				jsdatanodevo.setAction_index(datanode.path("action_indexes").intValue());
+				jsdatanodevo.setUri(datanode.path("uri").textValue());
+				break;
+			default : break;
+				
+		}
+		
+		//body setting
+		String body = makebody(jsdatanodevo,type);
+		
+		//post body setting
+		HttpEntity param= new HttpEntity(body, headers);
+		
+		//url setting
+		String url = seturl(jsdatanodevo,type);
+		//String url2 = "https://www.ibm-ouranswer.com/DialogManager/api/open/dialogs/search?key=614fb0137e11e399fd915aecbf2ff97e3dae661a";
+		
+		//RestTemplate use and receive the data.
+		RestTemplate restTemplate = new RestTemplate();
+		String result = restTemplate.postForObject(url, param, String.class);
+		
+		return result;
+	}
+	
+	private String makebody(JSdatanodeVO data, int apitype) throws JsonProcessingException {
+		// TODO Auto-generated method stub
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		Map<String,Object> bodyjson = new HashMap<String, Object>();
+		switch(apitype) {
+		case search :
+			bodyjson.put("keywords", data.getKeyword());
+			break;
+		case start:
+			bodyjson.put("dialog_id", data.getDialog_id());
+			break;
+		case next:
+			String body = "{" + "\"action_indexes\":["+data.getAction_index()+"] " + "}";
+			return body;
+		/*case back:
+			String backbody = " ";
+			return backbody;*/
+		default:
+			break;
+		}
+		
+		
+		String body = mapper.writeValueAsString(bodyjson);
+		
+		return body;
+	}
+
+	private String seturl(JSdatanodeVO selecteddata, int type) {
+		// TODO Auto-generated method stub
+		String url = "";
+		switch(type) {
+		case search:
+			url = "https://www.ibm-ouranswer.com/DialogManager/api/open/dialogs/search?key=614fb0137e11e399fd915aecbf2ff97e3dae661a";
+			break;
+		case start:
+			url = "https://www.ibm-ouranswer.com/DialogManager/api/open/conversations/start?key=614fb0137e11e399fd915aecbf2ff97e3dae661a";
+			break;
+		case next:
+			//url = selecteddata.getNext_node_uri()+"&key=614fb0137e11e399fd915aecbf2ff97e3dae661a";
+			url = selecteddata.getUri();
+			break;
+		/*case back:
+			url = selecteddata.getBack_node_uri()+"&key=614fb0137e11e399fd915aecbf2ff97e3dae661a";
+			break;*/
+		default :
+			break;
+		}
+		
+		return url;
+	}
+	
+	@Override
+	public String postvalue() {
+		// TODO Auto-generated method stub
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", "application/json;charset=UTF-8;version=1.0");
+		headers.set("Content-Type", "application/json;charset=UTF-8;version=1.0");
+		
+		String JSONInput = "{" + "\"keywords\":\"음식\" " + "}";
+		
+		HttpEntity param= new HttpEntity(JSONInput, headers);
+		
+		String url = "https://www.ibm-ouranswer.com/DialogManager/api/open/dialogs/search?key=614fb0137e11e399fd915aecbf2ff97e3dae661a";
+		RestTemplate restTemplate = new RestTemplate();
+		String result = restTemplate.postForObject(url, param, String.class);
+		
+		return result;
+	}
+
+}

@@ -1,0 +1,21 @@
+package com.jihee.kr.dao;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class CallrestapiDao {
+	
+	@Autowired
+	private SqlSession sqlSession;
+	
+	public void insertBotChat(String chat) {
+		sqlSession.insert("TbCHATLIST.insertbotchat", chat);
+	}
+	
+	public void insertUserChat(String chat) {
+		sqlSession.insert("TbCHATLIST.insertuserchat", chat);
+	}
+
+}

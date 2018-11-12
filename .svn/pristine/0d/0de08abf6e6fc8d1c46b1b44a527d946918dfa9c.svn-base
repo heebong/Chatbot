@@ -1,0 +1,15 @@
+package com.jihee.kr.dao;
+
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class HomeDao {
+
+	public String getname() {
+		// TODO Auto-generated method stub
+		
+		String name = "jihee";
+		return name;
+	}
+
+}

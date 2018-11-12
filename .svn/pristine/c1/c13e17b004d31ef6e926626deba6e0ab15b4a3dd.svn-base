@@ -1,0 +1,305 @@
+package com.jihee.kr.service;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jihee.kr.dao.CallrestapiDao;
+import com.jihee.kr.vo.JSdatanodeVO;
+
+@Service
+public class CallrestapiServiceImp implements CallrestapiService {
+	
+	@Autowired
+	CallrestapiDao callrestapidao;
+	
+	private static final Logger logger = LoggerFactory.getLogger(CallrestapiService.class);
+	
+	final int search = 0;
+	final int start = 1;
+	final int next = 2;
+	//final int back = 3;
+
+	@Override
+	public List<JSdatanodeVO> callapi(JSdatanodeVO jsdata, int type) throws IOException {
+		// TODO Auto-generated method stub
+		//hearder setting
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", "application/json;charset=UTF-8;version=1.0");
+		headers.set("Content-Type", "application/json;charset=UTF-8;version=1.0");
+		
+		//body setting
+		String body = makebody(jsdata,type);
+		
+		//post body setting
+		HttpEntity param= new HttpEntity(body, headers);
+		
+		//url setting
+		String url = seturl(jsdata,type);
+		//String url2 = "https://www.ibm-ouranswer.com/DialogManager/api/open/dialogs/search?key=614fb0137e11e399fd915aecbf2ff97e3dae661a";
+		
+		//RestTemplate use and receive the data.
+		RestTemplate restTemplate = new RestTemplate();
+		String result = restTemplate.postForObject(url, param, String.class);
+		
+		//mapping data
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode datanode = mapper.readTree(result);
+		List<JSdatanodeVO> datalist = new ArrayList<JSdatanodeVO>();
+		
+		if (type == search) {
+			callrestapidao.insertUserChat(jsdata.getKeywords());
+			logger.info("user : {}",jsdata.getKeywords());
+			if (datanode.size() == 0) {
+				callrestapidao.insertBotChat(jsdata.getChat_nosearch());
+				logger.info("bot : {}",jsdata.getChat_nosearch());
+			} else {
+				
+				for (int i=0; i<datanode.size() ; i++){
+					JSdatanodeVO data = new JSdatanodeVO();
+					data.setDialog_id(datanode.get(i).path("dialog_id").intValue());
+					data.setDialog_name(datanode.get(i).path("dialog_name").textValue());
+					
+					data.setKeywords(jsdata.getKeywords());
+					data.setChat_searchquest(null);
+					data.setChat_user(jsdata.getKeywords());
+					
+					datalist.add(i, data);
+				} 
+				callrestapidao.insertBotChat(datalist.get(0).getChat_searchtext());
+				logger.info("bot : {}", datalist.get(0).getChat_searchtext());
+				callrestapidao.insertBotChat(datalist.get(0).getChat_searchquest());
+				logger.info("bot : {}", datalist.get(0).getChat_searchquest());
+			}
+			
+			
+		} else if(type == start || type == next) {
+			if(type == start) {
+				callrestapidao.insertUserChat(jsdata.getDialog_name());
+				logger.info("user : {}",jsdata.getDialog_name());
+			} else {
+				if(jsdata.getAction_name() == null) {
+					jsdata.setAction_name("이전으로");
+				}
+				callrestapidao.insertUserChat(jsdata.getAction_name());
+				logger.info("user : {}",jsdata.getAction_name());
+			}
+			
+			JsonNode currentnode = datanode.path("current_node");
+			JsonNode actions =currentnode.path("node_actions");
+			
+			if(actions.size() == 0) { //마지막노드
+				JSdatanodeVO data = new JSdatanodeVO();
+				
+				data.setBack_node_uri(datanode.path("back_node_uri").textValue());
+				data.setNext_node_uri(datanode.path("next_node_uri").textValue());
+				data.setConversation_id(datanode.path("conversation_id").intValue());
+				data.setNode_question(currentnode.path("node_question").textValue());
+				data.setNode_text(currentnode.path("node_text").textValue());
+				
+				datalist.add(0,data);
+				callrestapidao.insertBotChat(datalist.get(0).getChat_bottext());
+				logger.info("bot : {}",datalist.get(0).getChat_bottext());
+				callrestapidao.insertBotChat(datalist.get(0).getChat_botquest());
+				logger.info("bot : {}",datalist.get(0).getChat_botquest());
+			} else {
+				for (int i=0; i<actions.size() ; i++){
+					JSdatanodeVO data = new JSdatanodeVO();
+				
+					data.setBack_node_uri(datanode.path("back_node_uri").textValue());
+					data.setNext_node_uri(datanode.path("next_node_uri").textValue());
+					data.setConversation_id(datanode.path("conversation_id").intValue());
+					data.setNode_question(currentnode.path("node_question").textValue());
+					data.setNode_text(currentnode.path("node_text").textValue());
+					
+					data.setAction_indexes(actions.get(i).path("action_index").intValue());
+					data.setAction_name(actions.get(i).path("action_name").textValue());
+					
+					datalist.add(i, data);
+				}
+				callrestapidao.insertBotChat(datalist.get(0).getChat_bottext());
+				logger.info("bot : {}",datalist.get(0).getChat_bottext());
+				callrestapidao.insertBotChat(datalist.get(0).getChat_botquest());
+				logger.info("bot : {}",datalist.get(0).getChat_botquest());
+			}			
+		}
+
+		return datalist;
+	}
+	
+	private String makebody(JSdatanodeVO data, int apitype) throws JsonProcessingException {
+		// TODO Auto-generated method stub
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		Map<String,Object> bodyjson = new HashMap<String, Object>();
+		switch(apitype) {
+		case search :
+			bodyjson.put("keywords", data.getKeywords());
+			break;
+		case start:
+			bodyjson.put("dialog_id", data.getDialog_id());
+			break;
+		case next:
+			String body = "{" + "\"action_indexes\":["+data.getAction_indexes()+"] " + "}";
+			return body;
+		/*case back:
+			String backbody = " ";
+			return backbody;*/
+		default:
+			break;
+		}
+		
+		
+		String body = mapper.writeValueAsString(bodyjson);
+		
+		return body;
+	}
+
+	private String seturl(JSdatanodeVO selecteddata, int type) {
+		// TODO Auto-generated method stub
+		String url = "";
+		switch(type) {
+		case search:
+			url = "https://www.ibm-ouranswer.com/DialogManager/api/open/dialogs/search?key=614fb0137e11e399fd915aecbf2ff97e3dae661a";
+			break;
+		case start:
+			url = "https://www.ibm-ouranswer.com/DialogManager/api/open/conversations/start?key=614fb0137e11e399fd915aecbf2ff97e3dae661a";
+			break;
+		case next:
+			//url = selecteddata.getNext_node_uri()+"&key=614fb0137e11e399fd915aecbf2ff97e3dae661a";
+			url = selecteddata.getUri();
+			break;
+		/*case back:
+			url = selecteddata.getBack_node_uri()+"&key=614fb0137e11e399fd915aecbf2ff97e3dae661a";
+			break;*/
+		default :
+			break;
+		}
+		
+		return url;
+	}
+	
+	@Override
+	public String postvalue() {
+		// TODO Auto-generated method stub
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", "application/json;charset=UTF-8;version=1.0");
+		headers.set("Content-Type", "application/json;charset=UTF-8;version=1.0");
+		
+		String JSONInput = "{" + "\"keywords\":\"음식\" " + "}";
+		
+		HttpEntity param= new HttpEntity(JSONInput, headers);
+		
+		String url = "https://www.ibm-ouranswer.com/DialogManager/api/open/dialogs/search?key=614fb0137e11e399fd915aecbf2ff97e3dae661a";
+		RestTemplate restTemplate = new RestTemplate();
+		String result = restTemplate.postForObject(url, param, String.class);
+		
+		return result;
+	}
+	
+	@Override
+	public List<JSdatanodeVO> callapijs(JSdatanodeVO jsdata, int type) throws IOException {
+		// TODO Auto-generated method stub
+		//hearder setting
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", "application/json;charset=UTF-8;version=1.0");
+		headers.set("Content-Type", "application/json;charset=UTF-8;version=1.0");
+		
+		/*//set JS
+		JSdatanodeVO jsdatanodevo = new JSdatanodeVO();
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode datanode = mapper.readTree(jsdata);
+		switch (type) {
+			case search:
+				jsdatanodevo.setKeywords(datanode.path("keywords").textValue());
+				break;
+			case start:
+				jsdatanodevo.setDialog_id(datanode.path("dialog_id").intValue());
+				break;
+			case next:
+				jsdatanodevo.setAction_index(datanode.path("action_indexes").intValue());
+				jsdatanodevo.setUri(datanode.path("uri").textValue());
+				break;
+			default : break;
+				
+		}*/
+		
+		//body setting
+		String body = makebody(jsdata,type);
+		
+		//post body setting
+		HttpEntity param= new HttpEntity(body, headers);
+		
+		//url setting
+		String url = seturl(jsdata,type);
+		//String url2 = "https://www.ibm-ouranswer.com/DialogManager/api/open/dialogs/search?key=614fb0137e11e399fd915aecbf2ff97e3dae661a";
+		
+		//RestTemplate use and receive the data.
+		RestTemplate restTemplate = new RestTemplate();
+		String result = restTemplate.postForObject(url, param, String.class);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode datanode = mapper.readTree(result);
+		List<JSdatanodeVO> datalist = new ArrayList<JSdatanodeVO>();
+		
+		if (type == search) {
+			//mapping the data.
+			for (int i=0; i<datanode.size() ; i++){
+				JSdatanodeVO data = new JSdatanodeVO();
+				data.setDialog_id(datanode.get(i).path("dialog_id").intValue());
+				data.setDialog_name(datanode.get(i).path("dialog_name").textValue());
+				datalist.add(i, data);
+			} 
+			
+		} else if(type == start || type == next) {
+			JsonNode currentnode = datanode.path("current_node");
+			JsonNode actions =currentnode.path("node_actions");
+			
+			if(actions.size() == 0) { //마지막노드
+				JSdatanodeVO data = new JSdatanodeVO();
+				
+				data.setBack_node_uri(datanode.path("back_node_uri").textValue());
+				data.setNext_node_uri(datanode.path("next_node_uri").textValue());
+				data.setConversation_id(datanode.path("conversation_id").intValue());
+				data.setNode_question(currentnode.path("node_question").textValue());
+				data.setNode_text(currentnode.path("node_text").textValue());
+				
+				datalist.add(0,data);
+			}
+			//mapping the data.
+			for (int i=0; i<actions.size() ; i++){
+				JSdatanodeVO data = new JSdatanodeVO();
+			
+				data.setBack_node_uri(datanode.path("back_node_uri").textValue());
+				data.setNext_node_uri(datanode.path("next_node_uri").textValue());
+				data.setConversation_id(datanode.path("conversation_id").intValue());
+				data.setNode_question(currentnode.path("node_question").textValue());
+				data.setNode_text(currentnode.path("node_text").textValue());
+				
+				data.setAction_indexes(actions.get(i).path("action_index").intValue());
+				data.setAction_name(actions.get(i).path("action_name").textValue());
+				
+				datalist.add(i, data);
+			}
+		}
+		
+		return datalist;
+	}
+
+
+}

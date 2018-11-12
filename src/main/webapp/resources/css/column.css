@@ -1,0 +1,182 @@
+body {
+	font:14px/1.8 Arial, Helvetica, sans-serif;
+	margin: 0;
+	padding: 5px;
+	scrollbar-track-color:#F0E7B8; /* 연한것.*/
+	scrollbar-face-color:#AAA380;
+	scrollbar-highlight-color:#FFFFFF;
+  	scrollbar-shadow-color:none;
+  	scrollbar-arrow-color:#AAA380;
+  	scrollbar-3dlight-color:#F0E7B8;
+}
+
+img {
+	width: 100%; max-width: 760px; vertical-align: middle;
+}
+
+div {
+	display: block;
+}
+
+.frame {
+	width: 600px;
+	margin: 0 auto;
+	border: 2px solid #FFF5C0;
+}
+
+.header {
+	padding:30px 10px;
+	text-align: center;
+	background: #FFF5C0;
+	margin-bottom: 20px;
+	border-bottom: : 2px solid #50B5B1;
+}
+
+.logo {
+	font-size: 2em;
+	font-weight: bold;
+	background: #50B5B1;
+	color: #fff;
+	display: inline-block;
+	padding: 0 8px;
+}
+
+.container {
+	margin-bottom: 20px;
+
+}
+
+.content {
+	height: 400px;
+}
+
+.chatting {
+	width: 600px;
+	overflow-y: scroll;
+	height: 380px;
+	display: block;
+	color: #34495e;
+	margin: 0 0 30px 0;
+	padding: 10px 0;
+}
+
+.chat {
+	margin: 10px;
+	max-width: 55%;
+	height: auto;
+	clear: both;
+	padding: 10px;
+	border-top-left-radius: 6px;
+	border-top-right-radius: 6px;
+	border-bottom-right-radius: 6px;
+	border-bottom-left-radius: 6px;	
+}
+
+.time {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #b1abb1;
+}
+
+.chat-user {
+	width: 550px;
+	float: right;
+}
+
+.chat-user .chat {
+	background: #FFF5C0;
+	float:right;
+}
+
+.chat-user .time {
+    float: right;
+}
+
+.chat-bot {
+	width: 550px;
+    float: left;
+	/*position: relative;*/
+}
+
+.chat-bot .chat{
+	background: #FFBDB6;
+	float: left;
+}
+
+.chat-bot .time {
+    float: left;
+}
+
+.input {
+	background-color: #FFF5C0;
+	/*margin-bottom: 20px;*/
+	/*height: 200px;*/
+	padding: 10px;
+	/*border-top: 2px solid #50B5B1;*/
+}
+
+.inputbox {
+	width: 500px;
+	height: 33px;
+	border: 1px solid #FFF5C0;
+}
+
+button {
+	border:none;
+	color: white;
+	font-size: 15px;
+}
+
+#input_button {
+	height: 36px;
+	width: 55px;
+	background-color: #50B5B1;
+}
+
+#input_button:hover {
+	background: #459895;
+}
+
+.select_button {
+	/*width : 600px;*/
+	height : 100px;
+	margin : 10px 0;
+	overflow-y : auto;
+	/*padding-top: 10px;*/
+}
+
+.button {
+	width : 150px;
+	height : 40px;
+	margin : 1px;
+	background-color: #50B5B1;
+}
+
+.button:hover {
+	/*background: #4AA4A0;*/
+	background: #459895;
+}
+
+#buttonback {
+	background:#8ED78E;
+}
+#buttonback:hover {
+	background: #73A973;
+}
+
+#stopbutton {
+	background: #968696;
+}
+
+#stopbutton:hover {
+    background: #6d5e6d;
+}
+
+.footer {
+	text-align: center;
+	border-top: 2px solid #FFF5C0;
+	font-size: 12px;
+	color: #D5CC9E;
+	margin: 20px auto;
+	width: 600px;
+}

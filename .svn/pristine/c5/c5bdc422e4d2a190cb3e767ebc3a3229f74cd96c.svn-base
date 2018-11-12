@@ -1,0 +1,17 @@
+package com.jihee.kr.service;
+
+import java.io.IOException;
+
+import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.jihee.kr.vo.JSdatanodeVO;
+
+@Service
+public interface CallrestapiService {
+	
+	public String postvalue();
+	
+	public String callapi(String jsdata, int type) throws JsonProcessingException, IOException;
+
+}

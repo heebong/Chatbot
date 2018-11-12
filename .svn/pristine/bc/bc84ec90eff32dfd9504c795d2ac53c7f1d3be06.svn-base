@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.3.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	
+	<!-- Packages scan -->
+	<context:component-scan base-package="com.jihee.kr.service" />
+	<context:component-scan base-package="com.jihee.kr.dao" />
+	<context:component-scan base-package="com.jihee.kr.vo" />
+	
+	<!-- 데이터베이스 연결 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"> 
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/> 
+		<property name="url" value="jdbc:oracle:thin:@localhost:1521:xe" /> 
+		<property name="username" value="JIHEE"/> 
+		<property name="password" value="1234"/> 
+	</bean>
+	
+	<!-- Sql Session Factory -->
+	<bean id="SqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	    <property name="dataSource" ref="dataSource" />
+	    <property name="configLocation" value="/WEB-INF/config/mybatis-config.xml" />
+	    <property name="mapperLocations" value="classpath*:sql/*.xml" />
+	</bean>
+	
+	<!-- SqlSession --> 
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate" destroy-method="clearCache"> 
+		<constructor-arg name="sqlSessionFactory" ref="SqlSessionFactory" /> 
+	</bean>
+	
+	
+	<!-- 트랜잭션 매니저 bean 을 등록합니다. --> 
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"> 
+		<property name="dataSource" ref="dataSource" /> 
+	</bean>
+	
+	<!-- 아노테이션 기반의 트랜잭션을 사용합니다. --> 
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+
+	<!-- resttemplate 사용하려고 혹시 몰라서 -->
+	<!-- <bean id="restTemplate" class="org.springframework.web.client.RestTemplate" /> -->
+		
+</beans>

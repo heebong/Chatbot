@@ -1,0 +1,88 @@
+package com.jihee.kr.vo;
+
+public class JSdatanodeVO {
+	//search need
+	private String keywords;
+	
+	// search result
+	private String dialog_name;
+	private int dialog_id;
+	
+	//start, next, back result
+	private String back_node_uri;
+	private String next_node_uri;
+	private String node_text;
+	private String node_question;
+	private String action_name;
+	private int action_indexes;
+	private String uri;
+	private int conversation_id;
+	
+	public String getDialog_name() {
+		return dialog_name;
+	}
+	public void setDialog_name(String dialog_name) {
+		this.dialog_name = dialog_name;
+	}
+	public int getDialog_id() {
+		return dialog_id;
+	}
+	public void setDialog_id(int dialog_id) {
+		this.dialog_id = dialog_id;
+	}
+	public String getBack_node_uri() {
+		return back_node_uri;
+	}
+	public void setBack_node_uri(String back_node_uri) {
+		this.back_node_uri = back_node_uri;
+	}
+	public String getNext_node_uri() {
+		return next_node_uri;
+	}
+	public void setNext_node_uri(String next_node_uri) {
+		this.next_node_uri = next_node_uri;
+	}
+	public String getNode_text() {
+		return node_text;
+	}
+	public void setNode_text(String node_text) {
+		this.node_text = node_text;
+	}
+	public String getNode_question() {
+		return node_question;
+	}
+	public void setNode_question(String node_question) {
+		this.node_question = node_question;
+	}
+	public String getAction_name() {
+		return action_name;
+	}
+	public void setAction_name(String action_name) {
+		this.action_name = action_name;
+	}
+	public int getAction_indexes() {
+		return action_indexes;
+	}
+	public void setAction_indexes(int action_indexes) {
+		this.action_indexes = action_indexes;
+	}
+	public String getKeywords() {
+		return keywords;
+	}
+	public void setKeywords(String keywords) {
+		this.keywords = keywords;
+	}
+	public String getUri() {
+		return uri;
+	}
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
+	public int getConversation_id() {
+		return conversation_id;
+	}
+	public void setConversation_id(int conversation_id) {
+		this.conversation_id = conversation_id;
+	}
+
+}

@@ -1,0 +1,152 @@
+package com.jihee.kr.vo;
+
+public class JSdatanodeVO {
+	//search need
+	private String keywords;
+	
+	// search result
+	private String dialog_name;
+	private int dialog_id;
+	
+	//start, next, back result
+	private String back_node_uri;
+	private String next_node_uri;
+	private String node_text;
+	private String node_question;
+	private String action_name;
+	private int action_indexes;
+	private String uri;
+	private int conversation_id;
+	
+	private String chat_nosearch;
+	private String chat_searchtext;
+	private String chat_searchquest;
+	private String chat_greeting;
+	private String chat_user;
+	private String chat_bottext;
+	private String chat_botquest;
+	private String chat_stop;
+	
+	public String getDialog_name() {
+		return dialog_name;
+	}
+	public void setDialog_name(String dialog_name) {
+		this.dialog_name = dialog_name;
+	}
+	public int getDialog_id() {
+		return dialog_id;
+	}
+	public void setDialog_id(int dialog_id) {
+		this.dialog_id = dialog_id;
+	}
+	public String getBack_node_uri() {
+		return back_node_uri;
+	}
+	public void setBack_node_uri(String back_node_uri) {
+		this.back_node_uri = back_node_uri;
+	}
+	public String getNext_node_uri() {
+		return next_node_uri;
+	}
+	public void setNext_node_uri(String next_node_uri) {
+		this.next_node_uri = next_node_uri;
+	}
+	public String getNode_text() {
+		return node_text;
+	}
+	public void setNode_text(String node_text) {
+		this.node_text = node_text;
+		setChat_bottext(node_text);
+	}
+	public String getNode_question() {
+		return node_question;
+	}
+	public void setNode_question(String node_question) {
+		this.node_question = node_question;
+		setChat_botquest(node_question);
+	}
+	public String getAction_name() {
+		return action_name;
+	}
+	public void setAction_name(String action_name) {
+		this.action_name = action_name;
+	}
+	public int getAction_indexes() {
+		return action_indexes;
+	}
+	public void setAction_indexes(int action_indexes) {
+		this.action_indexes = action_indexes;
+	}
+	public String getKeywords() {
+		return keywords;
+	}
+	public void setKeywords(String keywords) {
+		this.keywords = keywords;
+		setChat_nosearch(keywords);
+		setChat_searchtext(keywords);
+	}
+	public String getUri() {
+		return uri;
+	}
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
+	public int getConversation_id() {
+		return conversation_id;
+	}
+	public void setConversation_id(int conversation_id) {
+		this.conversation_id = conversation_id;
+	}
+	public String getChat_nosearch() {
+		return chat_nosearch;
+	}
+	public void setChat_nosearch(String chat_nosearch) {
+		this.chat_nosearch = "'"+chat_nosearch+"' 검색 결과가 없습니다. 죄송하지만 다시 검색해주세요.";
+	}
+	public String getChat_searchtext() {
+		return chat_searchtext;
+	}
+	public void setChat_searchtext(String chat_searchtext) {
+		this.chat_searchtext = "'"+chat_searchtext+"' 검색하셨습니다.";
+	}
+	public String getChat_searchquest() {
+		return chat_searchquest;
+	}
+	public void setChat_searchquest(String chat_searchquest) {
+		chat_searchquest = "아래 검색 결과 중 원하는 것을 선택해주세요.";
+		this.chat_searchquest = chat_searchquest;
+	}
+	public String getChat_greeting() {
+		return chat_greeting;
+	}
+	public void setChat_greeting(String chat_greeting) {
+		chat_greeting = "안녕하세요. 검색하고 싶은 내용이 무엇인가요?";
+		this.chat_greeting = chat_greeting;
+	}
+	public String getChat_user() {
+		return chat_user;
+	}
+	public void setChat_user(String chat_user) {
+		this.chat_user = chat_user;
+	}
+	public String getChat_bottext() {
+		return chat_bottext;
+	}
+	public void setChat_bottext(String chat_bottext) {
+		this.chat_bottext = chat_bottext;
+	}
+	public String getChat_botquest() {
+		return chat_botquest;
+	}
+	public void setChat_botquest(String chat_botquest) {
+		this.chat_botquest = chat_botquest;
+	}
+	public String getChat_stop() {
+		return chat_stop;
+	}
+	public void setChat_stop(String chat_stop) {
+		chat_stop = "대화를 종료합니다.";
+		this.chat_stop = chat_stop;
+	}
+
+}
